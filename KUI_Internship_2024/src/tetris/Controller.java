@@ -1,5 +1,6 @@
 package tetris;
 
+
 public class Controller implements ModelListener, GameEventsListener {
 	
 	private TetrisModel model;
@@ -41,4 +42,31 @@ public class Controller implements ModelListener, GameEventsListener {
 		model.drop();
 	}
 
+	@Override
+	public void scoreChanged(int score) {
+
+	}
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void levelChanged(int level) {
+
+	}
+
+	@Override
+	public void gameOver() {
+
+	}
+
+	public void restartGame() {
+		model.restartGame();
+	}
+
+	public void quitGame() {
+		System.exit(0);
+	}
 }

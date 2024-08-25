@@ -7,6 +7,9 @@ public interface GameEventsListener {
 	void moveRight();
 	void rotate();
 	void drop();
-	
-
+	void scoreChanged(int score);
+	void pause();
+	void levelChanged(int level);
+	void gameOver();
+	// TODO: other necessary methods...
 }

@@ -27,12 +27,8 @@ public class Peptides {
 	void createKMersDictionary() {
 		for (int i = 0; i < protein.length() - peptideSize + 1; i++) {
 			String kmer = protein.substring(i, i + peptideSize);
-			List<Integer> positions = kmers.get(kmer);
-			if (positions == null) {
-				positions = new ArrayList<>();
-				kmers.put(kmer, positions);
-			}
-			positions.add(i);
+            List<Integer> positions = kmers.computeIfAbsent(kmer, k -> new ArrayList<>());
+            positions.add(i);
 		}
 	}
 
@@ -41,7 +37,7 @@ public class Peptides {
 	}
 
 	public Map<String, List<Integer>> searchLibrary() {
-		LinkedHashMap<String, List<Integer>> existingPeptides = new LinkedHashMap<String, List<Integer>>();
+		LinkedHashMap<String, List<Integer>> existingPeptides = new LinkedHashMap<>();
 		for (String peptide : library) {
 			List<Integer> positions = kmers.get(peptide);
 			if (null == positions) 

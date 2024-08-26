@@ -22,8 +22,6 @@ public class PeptidesWithReverseCompare {
         for (String peptide : library) {
             peptidesMap.computeIfAbsent(peptide, k -> new ArrayList<>());
         }
-        slideAndCheck();
-        searchPeptideLibrary();
     }
 
     public List<Integer> search(String peptide) {
@@ -38,11 +36,6 @@ public class PeptidesWithReverseCompare {
                 positions.add(i);
             }
         }
-    }
-
-
-    public Map<String, List<Integer>> getPeptidesMap() {
-        return peptidesMap;
     }
 
     public Map<String, List<Integer>> searchPeptideLibrary() {

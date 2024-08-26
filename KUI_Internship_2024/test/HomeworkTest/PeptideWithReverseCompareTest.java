@@ -23,6 +23,7 @@ public class PeptideWithReverseCompareTest {
         protein = "ABERNLKDGHIHWEPOGCVNWOORNLKDGHIMXVNXMCWERY";
         var library = List.of(peptide, "ORNLKDGH", "ABCDEFGH");
         peptides = new PeptidesWithReverseCompare(PeptideInstance.DEFAULT_PEPTIDE_SIZE, protein, library);
+        peptides.slideAndCheck();
         foundDuplicatePeptides = peptides.searchPeptideLibrary();
     }
 

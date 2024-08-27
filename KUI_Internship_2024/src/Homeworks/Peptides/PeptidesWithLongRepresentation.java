@@ -7,8 +7,8 @@ import static Homeworks.Peptides.PeptideInstance.ALPHABET_SIZE;
 public class PeptidesWithLongRepresentation {
 
     private final List<String> library;
-    private String protein;
-    private int peptideSize;
+    private final String protein;
+    private final int peptideSize;
     public Map<Long, List<Integer>> peptidesMap = new HashMap<>();
 
     public PeptidesWithLongRepresentation(int peptideSize, String protein, List<String> library) {
@@ -29,7 +29,9 @@ public class PeptidesWithLongRepresentation {
     private void createPeptidesDictionary(List<String> library) {
         for (String peptide : library) {
             long encodedPeptide = encode(peptide);
-            peptidesMap.put(encodedPeptide, new ArrayList<>());
+            if (!peptidesMap.containsKey(encodedPeptide)) {
+                peptidesMap.put(encodedPeptide, new ArrayList<>());
+            }
         }
     }
 

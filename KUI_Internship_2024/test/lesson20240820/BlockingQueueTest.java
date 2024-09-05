@@ -33,7 +33,6 @@ public class BlockingQueueTest {
         executor.shutdown();
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-        // Verify the final state of the queue or perform other assertions
-        assert queue.size() == 0; // Ensure the queue is empty after all operations
+        assert queue.size() == 0;
     }
 }

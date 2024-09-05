@@ -2,31 +2,46 @@ package lesson20240820;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BlockingQueue<T> {
 
-	List<T> items = new ArrayList<>();
+	private final List<T> items = new ArrayList<>();
+	private final ReentrantLock lock = new ReentrantLock();
+	private final Condition notEmpty = lock.newCondition();
 
-	Object mutex = new Object();
-	
 	public void put(T item) {
-		items.add(item);
-		synchronized (mutex) {
-			mutex.notify();
+		lock.lock();
+		try {
+			items.add(item);
+			notEmpty.signal();
+		} finally {
+			lock.unlock();
 		}
 	}
 
-	
 	public T get() {
-		while (items.isEmpty()) {
-			synchronized (mutex) {
-				try {
-					mutex.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		lock.lock();
+		try {
+			while (items.isEmpty()) {
+				notEmpty.await();
 			}
+			return items.remove(0);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		} finally {
+			lock.unlock();
 		}
-		return items.remove(0);
+	}
+
+	public int size() {
+		lock.lock();
+		try {
+			return items.size();
+		} finally {
+			lock.unlock();
+		}
 	}
 }

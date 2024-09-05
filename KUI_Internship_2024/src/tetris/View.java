@@ -12,27 +12,42 @@ public class View {
         this.graphics = graphics;
     }
 
-    static void showScore(Graphics2D graphics, int score) {
+    public void showScore(int score) {
+        graphics.setColor(Color.white);
+        graphics.fillRect(50, 10, 150, 30);
+
         graphics.setColor(Color.black);
-//        TODO: graphics.clearRect();
-        //TODO: graphics.drawString("Total Score: " + score, );
+        graphics.drawString("Total Score: " + score, 50, 30);
     }
 
-    static void showLevel(Graphics2D graphics, int level) {
+    public void showLevel(int level) {
+        graphics.setColor(Color.white);
+        graphics.fillRect(150, 10, 200, 30);
+
         graphics.setColor(Color.black);
-//        TODO: graphics.clearRect();
-        //TODO: graphics.drawString("Level: " + level, );
+        graphics.drawString("Level: " + level, 300, 30);
     }
 
-    static void showGameOver(Graphics2D graphics) {
-        graphics.setColor(Color.red.darker());
+
+    public void showGameOver(int panelWidth, int panelHeight) {
+        graphics.setColor(Color.white); // Set the color to the background color to clear the area
+        graphics.fillRect(ORIGIN, ORIGIN + 100, panelWidth, 150); // Clear the area
+
+        graphics.setColor(Color.red.darker()); // Set the color for the text
         graphics.setFont(new Font("Arial", Font.BOLD, 40));
+
         String gameOverText = "GAME OVER";
-        graphics.drawString(gameOverText, ORIGIN + 50, ORIGIN + 150);
-//      TODO: graphics.drawString(gameOverText, (panel.getWidth() - gameOverWidth) / 2, (panel.getHeight() + gameOverHeight) / 2);
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+        int gameOverWidth = fontMetrics.stringWidth(gameOverText);
+        int gameOverHeight = fontMetrics.getHeight();
+
+        graphics.drawString(gameOverText, (panelWidth - gameOverWidth) / 2, (panelHeight + gameOverHeight) / 2);
     }
+
 
     public void draw(TetrisModel model) {
+        showScore(model.state.score);
+        showLevel(model.state.level);
         drawData(new DrawDataParameter(model.state.field, 0, 0, true));
         drawData(new DrawDataParameter(model.state.figure, model.state.position.y(), model.state.position.x(), false));
     }

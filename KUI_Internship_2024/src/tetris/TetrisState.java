@@ -8,6 +8,7 @@ public class TetrisState {
 	public Pair position;
 	public boolean gameOver = false;
 	public int score;
+	public int level = 1;
 
 	public TetrisState() {
 	}

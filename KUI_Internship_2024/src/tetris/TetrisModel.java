@@ -60,10 +60,6 @@ public class TetrisModel implements GameEventsListener {
         }
     }
 
-    private void notifyListeners() {
-        listeners.forEach(listener -> listener.onChange(this));
-    }
-
     @Override
     public void moveLeft() {
         if (state.gameOver) return;
@@ -88,16 +84,29 @@ public class TetrisModel implements GameEventsListener {
 
     @Override
     public void rotate() {
-        int[][] rotatedFigure = new int[4][4];
-        for (int r = 0; r < state.figure.length; r++) {
-            for (int c = 0; c < state.figure[r].length; c++) {
-                rotatedFigure[c][3 - r] = state.figure[r][c];
+        if (state.gameOver) return;
+
+        if (!checkFigureForSquare(state.figure.clone())) {
+            int[][] rotatedFigure = new int[4][4];
+            for (int r = 0; r < state.figure.length; r++) {
+                for (int c = 0; c < state.figure[r].length; c++) {
+                    rotatedFigure[c][3 - r] = state.figure[r][c];
+                }
+            }
+            if (isNewFiguresPositionValidAfterRotation(state.position, rotatedFigure)) {
+                state.figure = rotatedFigure;
+                notifyListeners();
             }
         }
-        if (isNewFiguresPositionValidAfterRotation(state.position, rotatedFigure)) {
-            state.figure = rotatedFigure;
-            notifyListeners();
-        }
+    }
+
+    private boolean checkFigureForSquare(int[][] figure) {
+        return Arrays.deepEquals(figure, new int[][]{
+                {0, 1, 1, 0},
+                {0, 1, 1, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+        });
     }
 
     @Override
@@ -112,13 +121,6 @@ public class TetrisModel implements GameEventsListener {
         pasteFigure();
         deleteFullRows();
         initFigure();
-        notifyListeners();
-    }
-
-    @Override
-    public void scoreChanged(int score) {
-
-
         notifyListeners();
     }
 

@@ -9,5 +9,4 @@ public interface ModelListener {
 	void levelChanged(TetrisModel model);
 
 	void gameOver(TetrisModel model);
-
 }

@@ -13,6 +13,7 @@ public class View {
     }
 
     public void showScore(int score) {
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics.setColor(Color.white);
         graphics.fillRect(50, 10, 150, 30);
 
@@ -21,6 +22,7 @@ public class View {
     }
 
     public void showLevel(int level) {
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics.setColor(Color.white);
         graphics.fillRect(150, 10, 200, 30);
 
@@ -29,19 +31,15 @@ public class View {
     }
 
 
-    public void showGameOver(int panelWidth, int panelHeight) {
-        graphics.setColor(Color.white); // Set the color to the background color to clear the area
-        graphics.fillRect(ORIGIN, ORIGIN + 100, panelWidth, 150); // Clear the area
+    public void showGameOver() {
+        graphics.setColor(Color.darkGray);
+        graphics.fillRect(50, 245, 300, 80); // Clear the area
 
-        graphics.setColor(Color.red.darker()); // Set the color for the text
+        graphics.setColor(Color.red.darker());
         graphics.setFont(new Font("Arial", Font.BOLD, 40));
 
-        String gameOverText = "GAME OVER";
-        FontMetrics fontMetrics = graphics.getFontMetrics();
-        int gameOverWidth = fontMetrics.stringWidth(gameOverText);
-        int gameOverHeight = fontMetrics.getHeight();
 
-        graphics.drawString(gameOverText, (panelWidth - gameOverWidth) / 2, (panelHeight + gameOverHeight) / 2);
+        graphics.drawString("GAME OVER", 80, 300);
     }
 
 
@@ -64,5 +62,10 @@ public class View {
 
     private void drawBox(int row, int col, int value) {
         graphics.drawBoxAt(ORIGIN + col * BOX_SIZE, ORIGIN + row * BOX_SIZE, value);
+    }
+
+    public void restart() {
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+        graphics.setColor(Color.white);
     }
 }

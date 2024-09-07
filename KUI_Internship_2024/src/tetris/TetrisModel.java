@@ -184,9 +184,22 @@ public class TetrisModel implements GameEventsListener {
         for (int row = 0; row < state.field.length; row++) {
             if (isFullRow(state.field[row])) {
                 deleteRow(row);
-                state.score += state.width;
+                calculateScore();
                 notifyListeners();
             }
+        }
+    }
+
+    private void calculateScore() {
+        state.score += state.width;
+        notifyListenersScoreChanged();
+        checkLevelUp();
+    }
+
+    private void checkLevelUp() {
+        if (state.score % 500 == 0) {
+            state.level++;
+            notifyListenersLevelChanged();
         }
     }
 
@@ -199,16 +212,22 @@ public class TetrisModel implements GameEventsListener {
 
     public void gameOver() {
         state.gameOver = true;
-        notifyListeners();
+        notifyListenersGameOver();
     }
 
     public void restartGame() {
+        state.gameOver = false;
+
+        state.score = 0;
+        notifyListenersScoreChanged();
+
+        state.level = 1;
+        notifyListenersGameOver();
+
         for (int[] row : state.field) {
             Arrays.fill(row, 0);
         }
 
-        state.score = 0;
-        state.gameOver = false;
         initFigure();
         notifyListeners();
     }
@@ -217,8 +236,19 @@ public class TetrisModel implements GameEventsListener {
     public void pause() {
     }
 
-    @Override
-    public void levelChanged(int level) {
+    private void notifyListeners() {
+        listeners.forEach(listener -> listener.onChange(this));
+    }
 
+    private void notifyListenersScoreChanged() {
+        listeners.forEach(listener -> listener.scoreChanged(this));
+    }
+
+    private void notifyListenersLevelChanged() {
+        listeners.forEach(listener -> listener.levelChanged(this));
+    }
+
+    private void notifyListenersGameOver() {
+        listeners.forEach(listener -> listener.gameOver(this));
     }
 }

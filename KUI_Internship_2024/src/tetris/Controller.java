@@ -29,7 +29,7 @@ public class Controller implements ModelListener, GameEventsListener {
 
     @Override
     public void gameOver(TetrisModel model) {
-        view.showGameOver(model.state.width, model.state.height);
+        view.showGameOver();
     }
 
     @Override

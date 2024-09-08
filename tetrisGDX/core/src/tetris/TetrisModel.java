@@ -1,160 +1,261 @@
 package tetris;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
 public class TetrisModel implements GameEventsListener {
 
-	public static final int DEFAULT_HEIGHT = 20;
-	public static final int DEFAULT_WIDTH = 10;
-	public static final int DEFAULT_COLORS_NUMBER = 7;
+    public static final int DEFAULT_HEIGHT = 20;
+    public static final int DEFAULT_WIDTH = 10;
+    public static final int DEFAULT_COLORS_NUMBER = 7;
 
-	int maxColors;
-	public TetrisState state = new TetrisState();
-	final List<ModelListener> listeners = new ArrayList<>();
+    int maxColors;
+    public TetrisState state = new TetrisState();
+    final List<ModelListener> listeners = new ArrayList<>();
 
-	public void addListener(ModelListener listener) {
-		listeners.add(listener);
-	}
+    public TetrisModel() {
+        this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_COLORS_NUMBER);
+    }
 
-	public void removeListener(ModelListener listener) {
-		listeners.remove(listener);
-	}
+    public TetrisModel(int width, int height, int maxColors) {
+        this.state.width = width;
+        this.state.height = height;
+        this.maxColors = maxColors;
+        state.field = new int[height][width];
+        if (!state.gameOver)
+            initFigure();
+    }
 
-	public TetrisModel() {
-		this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_COLORS_NUMBER);
-	}
-	
-	public TetrisModel(int width, int height, int maxColors) {
-		this.state.width = width;
-		this.state.height = height;
-		this.maxColors = maxColors;
-		state.field = new int[height][width];
-		initFigure();
-	}
+    public void addListener(ModelListener listener) {
+        listeners.add(listener);
+    }
 
-	private void initFigure() {
-		state.figure = FigureFactory.createNextFigure();
-		state.position = new Pair(state.width / 2 - 2, 0);
-	}
+    public void removeListener(ModelListener listener) {
+        listeners.remove(listener);
+    }
 
-	public Pair size() {
-		return new Pair(state.width, state.height);
-	}
+    private void initFigure() {
+        state.figure = FigureFactory.createNextFigure();
+        state.position = new Pair(state.width / 2 - state.figure[0].length / 2, state.height / 2);
+    }
 
-	@Override
-	public void slideDown() {
-		var newPosition = new Pair(state.position.x(), state.position.y() + 1);
-		if (isNewFiguresPositionValid(newPosition)) {
-			state.position = newPosition;
-			notifyListeners();
-		} else {
-			pasteFigure();
-			initFigure();
-			notifyListeners();
-			if (!isNewFiguresPositionValid(state.position)) {
-				gameOver();
-			}
-		}
-	}
+    public Pair size() {
+        return new Pair(state.width, state.height);
+    }
 
-	private void notifyListeners() {
-		listeners.forEach(listener -> listener.onChange(this));
-	}
+    @Override
+    public void slideDown() {
+        if (state.gameOver) return;
 
-	private void gameOver() {
-		// TODO Auto-generated method stub
+        var newPosition = new Pair(state.position.x(), state.position.y() - 1);
+        if (isNewFiguresPositionValid(newPosition)) {
+            state.position = newPosition;
+            notifyListeners();
+        } else {
+            pasteFigure();
+            deleteFullRows();
+            initFigure();
+            notifyListeners();
+            if (!isNewFiguresPositionValid(state.position)) {
+                gameOver();
+            }
+        }
+    }
 
-	}
+    @Override
+    public void moveLeft() {
+        if (state.gameOver) return;
 
-	@Override
-	public void moveLeft() {
-		var newPosition = new Pair(state.position.x() - 1, state.position.y());
-		if (isNewFiguresPositionValid(newPosition)) {
-			state.position = newPosition;
-			notifyListeners();
-		}
-	}
+        var newPosition = new Pair(state.position.x() - 1, state.position.y());
+        if (isNewFiguresPositionValid(newPosition)) {
+            state.position = newPosition;
+            notifyListeners();
+        }
+    }
 
-	@Override
-	public void moveRight() {
-		var newPosition = new Pair(state.position.x() + 1, state.position.y());
-		if (isNewFiguresPositionValid(newPosition)) {
-			state.position = newPosition;
-			notifyListeners();
-		}
-	}
+    @Override
+    public void moveRight() {
+        if (state.gameOver) return;
 
-	@Override
-	public void rotate() {
-		int[][] f = new int[4][4];
-		for (int r = 0; r < state.figure.length; r++) {
-			for (int c = 0; c < state.figure[r].length; c++) {
-				f[c][3 - r] = state.figure[r][c];
-			}
-		}
-		state.figure = f;
-		notifyListeners();
-	}
+        var newPosition = new Pair(state.position.x() + 1, state.position.y());
+        if (isNewFiguresPositionValid(newPosition)) {
+            state.position = newPosition;
+            notifyListeners();
+        }
+    }
 
-	@Override
-	public void drop() {
-		// TODO Auto-generated method stub
+    @Override
+    public void rotate() {
+        if (state.gameOver) return;
 
-		notifyListeners();
-	}
+        if (!checkFigureForSquare(state.figure.clone())) {
+            int[][] rotatedFigure = new int[4][4];
+            for (int r = 0; r < state.figure.length; r++) {
+                for (int c = 0; c < state.figure[r].length; c++) {
+                    rotatedFigure[c][3 - r] = state.figure[r][c];
+                }
+            }
+            if (isNewFiguresPositionValidAfterRotation(state.position, rotatedFigure)) {
+                state.figure = rotatedFigure;
+                notifyListeners();
+            }
+        }
+    }
 
-	public boolean isNewFiguresPositionValid(Pair newPosition) {
+    private boolean checkFigureForSquare(int[][] figure) {
+        return Arrays.deepEquals(figure, new int[][]{
+                {0, 1, 1, 0},
+                {0, 1, 1, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+        });
+    }
 
-		boolean[] result = new boolean[1];
-		result[0] = true;
+    @Override
+    public void drop() {
+        var droppedFigurePosition = new Pair(state.position.x(), state.position.y() - 1);
 
-		walkThroughAllFigureCells(newPosition, (absPos, relPos) -> {
-			if (result[0]) {
-				result[0] = checkAbsPos(absPos);
-			}
-		});
+        while (isNewFiguresPositionValid(droppedFigurePosition)) {
+            state.position = droppedFigurePosition;
+            droppedFigurePosition = new Pair(state.position.x(), state.position.y() - 1);
+        }
 
-		return result[0];
-	}
+        pasteFigure();
+        deleteFullRows();
+        initFigure();
+        notifyListeners();
+    }
 
-	private void walkThroughAllFigureCells(Pair newPosition, BiConsumer<Pair, Pair> payload) {
-		for (int row = 0; row < state.figure.length; row++) {
-			for (int col = 0; col < state.figure[row].length; col++) {
-				if (state.figure[row][col] == 0)
-					continue;
-				int absCol = newPosition.x() + col;
-				int absRow = newPosition.y() + row;
-				payload.accept(new Pair(absCol, absRow), new Pair(col, row));
-			}
-		}
-	}
+    public boolean isNewFiguresPositionValid(Pair newPosition) {
+        return isNewFiguresPositionValidAfterRotation(newPosition, state.figure);
+    }
 
-	private boolean checkAbsPos(Pair absPos) {
-		var absCol = absPos.x();
-		var absRow = absPos.y();
-		if (isColumnPositionOutOfBoundaries(absCol))
-			return false;
-		if (isRowPositionOutOfBoundaries(absRow))
-			return false;
-		if (state.field[absRow][absCol] != 0)
-			return false;
-		return true;
-	}
+    public boolean isNewFiguresPositionValidAfterRotation(Pair newPosition, int[][] figure) {
+        boolean[] result = new boolean[1];
+        result[0] = true;
 
-	private boolean isRowPositionOutOfBoundaries(int absRow) {
-		return absRow < 0 || absRow >= state.height;
-	}
+        walkThroughAllFigureCells(newPosition, figure, (absPos, k) -> {
+            if (result[0]) {
+                result[0] = checkAbsPos(absPos);
+            }
+        });
 
-	private boolean isColumnPositionOutOfBoundaries(int absCol) {
-		return absCol < 0 || absCol >= state.width;
-	}
+        return result[0];
+    }
 
-	public void pasteFigure() {
-		walkThroughAllFigureCells(state.position, (absPos, relPos) -> {
-			state.field[absPos.y()][absPos.x()] = state.figure[relPos.y()][relPos.x()];
-		});
-	}
+    private void walkThroughAllFigureCells(Pair newPosition, int[][] figure, BiConsumer<Pair, Pair> payload) {
+        for (int row = 0; row < figure.length; row++) {
+            for (int col = 0; col < figure[row].length; col++) {
+                if (figure[row][col] == 0)
+                    continue;
+                int absCol = newPosition.x() + col;
+                int absRow = newPosition.y() + row;
+                payload.accept(new Pair(absCol, absRow), new Pair(col, row));
+            }
+        }
+    }
 
+    private boolean checkAbsPos(Pair absPos) {
+        var absCol = absPos.x();
+        var absRow = absPos.y();
+        if (isColumnPositionOutOfBoundaries(absCol))
+            return false;
+        if (isRowPositionOutOfBoundaries(absRow))
+            return false;
+        return state.field[absRow][absCol] == 0;
+    }
+
+    private boolean isRowPositionOutOfBoundaries(int absRow) {
+        return absRow < 0 || absRow >= state.height;
+    }
+
+    private boolean isColumnPositionOutOfBoundaries(int absCol) {
+        return absCol < 0 || absCol >= state.width;
+    }
+
+    public void pasteFigure() {
+        walkThroughAllFigureCells(state.position, state.figure, (absPos, relPos) -> {
+            System.out.println("y:" + absPos.y());
+            System.out.println("x:" + absPos.x());
+            state.field[absPos.y()][absPos.x()] = state.figure[relPos.y()][relPos.x()];
+    });
+    }
+
+    private boolean isFullRow(int[] fieldRow) {
+        return Arrays.stream(fieldRow).noneMatch(value -> value == 0);
+    }
+
+    private void deleteFullRows() {
+        for (int row = 0; row < state.field.length; row++) {
+            if (isFullRow(state.field[row])) {
+                deleteRow(row);
+                calculateScore();
+                notifyListeners();
+            }
+        }
+    }
+
+    private void calculateScore() {
+        state.score += state.width;
+        notifyListenersScoreChanged();
+        checkLevelUp();
+    }
+
+    private void checkLevelUp() {
+        if (state.score % 500 == 0) {
+            state.level++;
+            notifyListenersLevelChanged();
+        }
+    }
+
+    private void deleteRow(int row) {
+        for (int r = row; r > 0; r--) {
+            state.field[r] = Arrays.copyOf(state.field[r + 1], state.field[r + 1].length);
+        }
+        state.field[0] = new int[state.width];
+    }
+
+    public void gameOver() {
+        state.gameOver = true;
+        notifyListenersGameOver();
+    }
+
+    public void restartGame() {
+        state.gameOver = false;
+
+        state.score = 0;
+        notifyListenersScoreChanged();
+
+        state.level = 1;
+        notifyListenersGameOver();
+
+        for (int[] row : state.field) {
+            Arrays.fill(row, 0);
+        }
+
+        initFigure();
+        notifyListeners();
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    private void notifyListeners() {
+        listeners.forEach(listener -> listener.onChange(this));
+    }
+
+    private void notifyListenersScoreChanged() {
+        listeners.forEach(listener -> listener.scoreChanged(this));
+    }
+
+    private void notifyListenersLevelChanged() {
+        listeners.forEach(listener -> listener.levelChanged(this));
+    }
+
+    private void notifyListenersGameOver() {
+        listeners.forEach(listener -> listener.gameOver(this));
+    }
 }

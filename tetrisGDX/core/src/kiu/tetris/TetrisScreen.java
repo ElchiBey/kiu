@@ -4,11 +4,11 @@ import com.badlogic.gdx.ScreenAdapter;
 
 public class TetrisScreen extends ScreenAdapter {
 	
-	TetrisStage _stage;
+	tetrisGDX.TetrisStage _stage;
 
 	@Override
 	public void show() {
-		_stage = new TetrisStage();
+		_stage = new tetrisGDX.TetrisStage();
 		_stage.init();
 	}
 

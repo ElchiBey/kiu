@@ -7,6 +7,7 @@ public interface GameEventsListener {
 	void moveRight();
 	void rotate();
 	void drop();
-	
-
+	void pause();
+	void gameOver();
+	// TODO: other necessary methods...
 }

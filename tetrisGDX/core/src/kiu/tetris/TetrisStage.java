@@ -1,10 +1,11 @@
-package kiu.tetris;
+package tetrisGDX;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,6 +19,8 @@ import tetris.Graphics;
 import tetris.TetrisModel;
 import tetris.View;
 
+import java.awt.*;
+
 public class TetrisStage extends Stage implements Graphics {
 	
 	static Color[] COLORS = {
@@ -29,6 +32,7 @@ public class TetrisStage extends Stage implements Graphics {
 	private View view;
 	private TetrisModel model;
 	private Controller controller;
+	private BitmapFont font = new BitmapFont();
 
 	public TetrisStage() {
 		OrthographicCamera camera = new OrthographicCamera();
@@ -87,15 +91,44 @@ public class TetrisStage extends Stage implements Graphics {
 
 	@Override
 	public void drawBoxAt(int x, int y, int size, int colorIndex) {
-		Camera camera = getViewport().getCamera();
-		camera.update();
-
-		shape.setProjectionMatrix(camera.combined);
-
 		shape.begin(ShapeType.Filled);
 		shape.setColor(COLORS[colorIndex]);
 		shape.rect(x, y, size, size);
 		shape.end();
+	}
+
+	@Override
+	public void drawBoxAt(int i, int j, int value) {
+		int size = 30; // Example block size
+		drawBoxAt(j, i, size, value);
+	}
+
+	@Override
+	public void fillRect(int x, int y, int width, int height) {
+		shape.begin(ShapeType.Filled);
+		shape.rect(x, y, width, height);
+		shape.end();
+	}
+
+	@Override
+	public void drawString(String s, int x, int y) {
+		getBatch().begin();
+		font.draw(getBatch(), s, x, y);
+		getBatch().end();
+	}
+
+	@Override
+	public void setColor(java.awt.Color awtColor) {
+		float r = awtColor.getRed() / 255f;
+		float g = awtColor.getGreen() / 255f;
+		float b = awtColor.getBlue() / 255f;
+		float a = awtColor.getAlpha() / 255f;
+		shape.setColor(new Color(r, g, b, a));
+	}
+
+	@Override
+	public void setFont(Font arial) {
+
 	}
 
 }

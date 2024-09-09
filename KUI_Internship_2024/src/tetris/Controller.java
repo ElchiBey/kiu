@@ -1,10 +1,15 @@
 package tetris;
 
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class Controller implements ModelListener, GameEventsListener {
 
     private TetrisModel model;
     private View view;
+    private ScheduledExecutorService service;
 
     public Controller(TetrisModel model, View view) {
         this.model = model;
@@ -22,9 +27,18 @@ public class Controller implements ModelListener, GameEventsListener {
         view.showScore(model.state.score);
     }
 
+    public void setTask(ScheduledExecutorService service) {
+        this.service = service;
+    }
+
     @Override
     public void levelChanged(TetrisModel model) {
         view.showLevel(model.state.level);
+
+        model.changePeriod();
+        service.shutdownNow();
+        service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(this::slideDown, 0, (long)model.state.period, TimeUnit.MILLISECONDS);
     }
 
     @Override

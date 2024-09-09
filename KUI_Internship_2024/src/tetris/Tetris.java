@@ -34,41 +34,7 @@ public class Tetris {
         TetrisModel model = new TetrisModel(TetrisModel.DEFAULT_WIDTH, TetrisModel.DEFAULT_HEIGHT,
                 TetrisModel.DEFAULT_COLORS_NUMBER);
 
-        View view = new View(new Graphics() {
-
-            @Override
-            public void drawBoxAt(int i, int j, int value) {
-                graphics.setColor(COLORS[value]);
-                graphics.fillRect(i, j, View.BOX_SIZE, View.BOX_SIZE);
-            }
-
-            @Override
-            public void fillRect(int i, int i1, int i2, int i3) {
-                graphics.fillRect(i, i1, i2, i3);
-            }
-
-            @Override
-            public void drawString(String s, int i, int i1) {
-                graphics.drawString(s, i, i1);
-            }
-
-            @Override
-            public void setColor(Color color) {
-                graphics.setColor(color);
-            }
-
-            @Override
-            public void setFont(Font font) {
-                graphics.setFont(font);
-            }
-
-            @Override
-            public FontMetrics getFontMetrics() {
-                return graphics.getFontMetrics();
-            }
-        });
-
-        Controller controller = new Controller(model, view);
+        Controller controller = getController(graphics, model);
 
         frame.addKeyListener(new KeyAdapter() {
             @Override
@@ -106,6 +72,49 @@ public class Tetris {
 
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(controller::slideDown, 0, 1, TimeUnit.SECONDS);
+    }
+
+    private static void task(Controller controller, double period) {
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(controller::slideDown, 0, (long)period, TimeUnit.SECONDS);
+        controller.setTask(service);
+    }
+
+    private static Controller getController(Graphics2D graphics, TetrisModel model) {
+        View view = new View(new Graphics() {
+
+            @Override
+            public void drawBoxAt(int i, int j, int value) {
+                graphics.setColor(COLORS[value]);
+                graphics.fillRect(i, j, View.BOX_SIZE, View.BOX_SIZE);
+            }
+
+            @Override
+            public void fillRect(int i, int i1, int i2, int i3) {
+                graphics.fillRect(i, i1, i2, i3);
+            }
+
+            @Override
+            public void drawString(String s, int i, int i1) {
+                graphics.drawString(s, i, i1);
+            }
+
+            @Override
+            public void setColor(Color color) {
+                graphics.setColor(color);
+            }
+
+            @Override
+            public void setFont(Font font) {
+                graphics.setFont(font);
+            }
+        });
+
+        Controller controller = new Controller(model, view);
+
+        task(controller, model.state.period);
+
+        return controller;
     }
 
 }

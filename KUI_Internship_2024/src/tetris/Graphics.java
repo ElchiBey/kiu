@@ -14,5 +14,4 @@ public interface Graphics {
 
     void setFont(Font arial);
 
-    FontMetrics getFontMetrics();
 }

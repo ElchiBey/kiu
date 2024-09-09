@@ -10,6 +10,7 @@ public class TetrisModel implements GameEventsListener {
     public static final int DEFAULT_HEIGHT = 20;
     public static final int DEFAULT_WIDTH = 10;
     public static final int DEFAULT_COLORS_NUMBER = 7;
+    private static final long DEFAULT_PERIOD = 1050;
 
     int maxColors;
     public TetrisState state = new TetrisState();
@@ -197,8 +198,9 @@ public class TetrisModel implements GameEventsListener {
     }
 
     private void checkLevelUp() {
-        if (state.score % 500 == 0) {
+        if (state.score % 100 == 0) {
             state.level++;
+            changePeriod();
             notifyListenersLevelChanged();
         }
     }
@@ -222,7 +224,9 @@ public class TetrisModel implements GameEventsListener {
         notifyListenersScoreChanged();
 
         state.level = 1;
-        notifyListenersGameOver();
+        state.period = TetrisModel.DEFAULT_PERIOD;
+        notifyListenersLevelChanged();
+
 
         for (int[] row : state.field) {
             Arrays.fill(row, 0);
@@ -236,6 +240,11 @@ public class TetrisModel implements GameEventsListener {
     public void pause() {
     }
 
+    public void changePeriod() {
+        state.period -= 50;
+        System.out.println(state.period);
+    }
+
     private void notifyListeners() {
         listeners.forEach(listener -> listener.onChange(this));
     }
@@ -245,7 +254,9 @@ public class TetrisModel implements GameEventsListener {
     }
 
     private void notifyListenersLevelChanged() {
-        listeners.forEach(listener -> listener.levelChanged(this));
+        listeners.forEach(listener -> {
+            listener.levelChanged(this);
+        });
     }
 
     private void notifyListenersGameOver() {

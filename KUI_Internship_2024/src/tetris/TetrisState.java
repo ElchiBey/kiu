@@ -9,6 +9,7 @@ public class TetrisState {
 	public boolean gameOver = false;
 	public int score;
 	public int level = 1;
+	public double period = 1050;
 
 	public TetrisState() {
 	}

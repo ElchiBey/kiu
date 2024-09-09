@@ -9,5 +9,4 @@ public interface GameEventsListener {
 	void drop();
 	void pause();
 	void gameOver();
-	// TODO: other necessary methods...
 }

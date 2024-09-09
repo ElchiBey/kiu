@@ -1,3 +1,0 @@
-
-Improve performance of CollectWgsMetrics  (up to 7 points) 
-(hint: start with doWork() method)

@@ -18,11 +18,12 @@ public class PeptidesWithBinarySearch {
     }
 
     public long encode(String peptide) {
-        long value = 0;
-        for (int i = 0; i < peptide.length(); i++) {
-            value = value * ALPHABET_SIZE + (peptide.charAt(i) - 'A');
+        long result = Character.getNumericValue(peptide.charAt(0));
+        for (int i = 1; i < peptide.length(); i++) {
+            result |= Character.getNumericValue(peptide.charAt(i));
+            result <<= 8;
         }
-        return value;
+        return result;
     }
 
     private void createSortedPeptidesList(List<String> library) {

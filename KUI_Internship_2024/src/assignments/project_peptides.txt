@@ -22,12 +22,12 @@ take peptides from library one by one and check whether it is in the map.
 If so, fetch matching k-mer’s position and put into a list for the peptide.
 
 
-Approach 2:
+Approach 2: (done)
 Reverse compared to 1st one.
-Put peptides into a Map (Map<peptide, list of positions>) 
-and then take k-mers from long protein one by one, 
+Put peptides into a Map (Map<peptide, list of positions>)
+and then take k-mers from long protein one by one,
 sliding 1 position to the right every time.
-Then check whether the current k-mer is in the Map of peptides. 
+Then check whether the current k-mer is in the Map of peptides.
 If so, put k-mer’s position into a list of positions for the peptide.
 
 
@@ -38,7 +38,7 @@ and re-apply approach 2: for each k-mer convert it
 into a long integer and search for it in a Map of peptides.
 
 
-Approach 4: use Binary Search!
+Approach 4: use Binary Search! (done)
 
 Instead of using Map of peptides just put their
 long integer representation into an array of longs

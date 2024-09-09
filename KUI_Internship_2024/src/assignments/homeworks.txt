@@ -1,5 +1,5 @@
 -------------------------------------
-homework-2024-08-20   (1 point)
+homework-2024-08-20   (1 point) - Done
 
 make BlockingQueue thread-safe to avoid race condition
 
@@ -12,7 +12,7 @@ Chat:  implement "exit" command interpretation in ChatMember
 homework-2024-08-27  (1.5 point)
 
 Implement BlockingQueue using Semaphore
-Implement BlockingQueue using Locks
+Implement BlockingQueue using Locks - Done
 
 -------------------------------------
 homework-2024-08-29   (1.5 points)

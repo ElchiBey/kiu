@@ -22,5 +22,4 @@ public class WorkerThread implements Executor {
 			task.run();
 		}
 	}
-
 }

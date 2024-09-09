@@ -26,6 +26,12 @@ public class Controller implements InputProcessor {
             case Input.Keys.DOWN:
                 model.shiftDown();
                 break;
+            case Input.Keys.MINUS:
+                model.decreaseLevel();
+                break;
+            case Input.Keys.EQUALS:
+                model.increaseLevel();
+                break;
         }
         return true;
     }

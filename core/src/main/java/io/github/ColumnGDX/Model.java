@@ -197,7 +197,7 @@ public class Model implements GameEventListener {
         }
     }
 
-    void descreaseLevel() {
+    void decreaseLevel() {
         this.changeLevel(-1);
     }
 

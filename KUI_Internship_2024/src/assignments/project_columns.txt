@@ -1,8 +1,8 @@
 up to 5 points
 
 
-1. Extract Controller
-2. Applet ->  Desktop
+1. Extract Controller - Done
+2. Applet ->  Desktop - kind of
 3. (optional) introduce animations (+2 points)
   a. pausing game should show blinking figure
   b. remove neighbors  with some delays

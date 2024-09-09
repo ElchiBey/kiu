@@ -1,13 +1,14 @@
 
 HomeWorks - up to 4.5 points in total (maybe more, not collected all info yet)
+3
 
 Projects:
 
-Assembly: 3 points
-Columns:  5 points
-Tetris:   5 points
-Peptides: 3 points
-Picard:   7 points
+Assembly: 3 points - 0
+Columns:  5 points - 1
+Tetris:   5 points - 4
+Peptides: 3 points - 2
+Picard:   7 points - 0
 
 TOTAL MAX:  27.5 points
 

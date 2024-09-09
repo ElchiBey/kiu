@@ -2,31 +2,46 @@ package lesson20240827;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class BlockingQueueWithSemaphore<T> {
 
-	List<T> items = new ArrayList<>();
+	private final List<T> items = new ArrayList<>();
+	private final int capacity;
 
-	Object mutex = new Object();
-	
-	public void put(T item) {
-		items.add(item);
-		synchronized (mutex) {
-			mutex.notify();
-		}
+	private final Semaphore itemsSemaphore;
+	private final Semaphore spaceSemaphore;
+	private final Semaphore accessSemaphore;
+
+	public BlockingQueueWithSemaphore(int capacity) {
+		this.capacity = capacity;
+		this.itemsSemaphore = new Semaphore(0);
+		this.spaceSemaphore = new Semaphore(capacity);
+		this.accessSemaphore = new Semaphore(1);
 	}
 
-	
-	public T get() {
-		while (items.isEmpty()) {
-			synchronized (mutex) {
-				try {
-					mutex.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+	public void put(T item) throws InterruptedException {
+		spaceSemaphore.acquireUninterruptibly();
+		accessSemaphore.acquireUninterruptibly();
+		try {
+			items.add(item);
+		} finally {
+			accessSemaphore.release();
 		}
-		return items.remove(0);
+		itemsSemaphore.release();
+	}
+
+	public T get() throws InterruptedException {
+		itemsSemaphore.acquireUninterruptibly();
+		accessSemaphore.acquireUninterruptibly();
+		T item;
+		try {
+			item = items.remove(0);
+		} finally {
+			accessSemaphore.release();
+		}
+		spaceSemaphore.release();
+		System.out.println(spaceSemaphore.availablePermits());
+		return item;
 	}
 }

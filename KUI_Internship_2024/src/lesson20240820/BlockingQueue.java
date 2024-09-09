@@ -27,7 +27,7 @@ public class BlockingQueue<T> {
 			while (items.isEmpty()) {
 				notEmpty.await();
 			}
-			return items.removeFirst();
+			return items.remove(0);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);

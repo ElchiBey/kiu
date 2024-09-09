@@ -1,5 +1,6 @@
 package lesson20240820;
 
+
 public class RaceCondition {
 
 	static int counter = 0;
@@ -11,6 +12,7 @@ public class RaceCondition {
 		new Thread(RaceCondition::count).start();
 		new Thread(RaceCondition::count).start();
 		new Thread(RaceCondition::count).start();
+;
 
 		int seconds = 0;
 		while (true) {

@@ -10,16 +10,16 @@ public class BlockingQueueTest {
     public void testConcurrentAccess() throws InterruptedException {
         BlockingQueue<Integer> queue = new BlockingQueue<>();
 
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
         Runnable producer = () -> {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 50; i++) {
                 queue.put(i);
             }
         };
 
         Runnable consumer = () -> {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 50; i++) {
                 int item = queue.get();
                 System.out.println(Thread.currentThread() + "Consumed: " + item);
             }

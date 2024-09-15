@@ -69,9 +69,6 @@ public class Tetris {
                 }
             }
         });
-
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(controller::slideDown, 0, 1, TimeUnit.SECONDS);
     }
 
     private static void task(Controller controller, int period) {
@@ -112,7 +109,7 @@ public class Tetris {
 
         Controller controller = new Controller(model, view);
 
-        task(controller, model.state.period);
+//        task(controller, model.state.period);
 
         return controller;
     }

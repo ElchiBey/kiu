@@ -250,6 +250,7 @@ public class TetrisModel implements GameEventsListener {
 
     public void changePeriod() {
         state.period -= 50;
+
         notifyListeners();
         System.out.println(state.period);
     }

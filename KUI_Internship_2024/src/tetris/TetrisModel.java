@@ -10,7 +10,7 @@ public class TetrisModel implements GameEventsListener {
     public static final int DEFAULT_HEIGHT = 20;
     public static final int DEFAULT_WIDTH = 10;
     public static final int DEFAULT_COLORS_NUMBER = 7;
-    private static final long DEFAULT_PERIOD = 1050;
+    private static final int DEFAULT_PERIOD = 1000;
 
     int maxColors;
     public TetrisState state = new TetrisState();
@@ -46,17 +46,19 @@ public class TetrisModel implements GameEventsListener {
     public void slideDown() {
         if (state.gameOver) return;
 
-        var newPosition = new Pair(state.position.x(), state.position.y() + 1);
-        if (isNewFiguresPositionValid(newPosition)) {
-            state.position = newPosition;
-            notifyListeners();
-        } else {
-            pasteFigure();
-            deleteFullRows();
-            initFigure();
-            notifyListeners();
-            if (!isNewFiguresPositionValid(state.position)) {
-                gameOver();
+        if (!state.paused) {
+            var newPosition = new Pair(state.position.x(), state.position.y() + 1);
+            if (isNewFiguresPositionValid(newPosition)) {
+                state.position = newPosition;
+                notifyListeners();
+            } else {
+                pasteFigure();
+                deleteFullRows();
+                initFigure();
+                notifyListeners();
+                if (!isNewFiguresPositionValid(state.position)) {
+                    gameOver();
+                }
             }
         }
     }
@@ -65,10 +67,12 @@ public class TetrisModel implements GameEventsListener {
     public void moveLeft() {
         if (state.gameOver) return;
 
-        var newPosition = new Pair(state.position.x() - 1, state.position.y());
-        if (isNewFiguresPositionValid(newPosition)) {
-            state.position = newPosition;
-            notifyListeners();
+        if (!state.paused) {
+            var newPosition = new Pair(state.position.x() - 1, state.position.y());
+            if (isNewFiguresPositionValid(newPosition)) {
+                state.position = newPosition;
+                notifyListeners();
+            }
         }
     }
 
@@ -76,10 +80,12 @@ public class TetrisModel implements GameEventsListener {
     public void moveRight() {
         if (state.gameOver) return;
 
-        var newPosition = new Pair(state.position.x() + 1, state.position.y());
-        if (isNewFiguresPositionValid(newPosition)) {
-            state.position = newPosition;
-            notifyListeners();
+        if (!state.paused) {
+            var newPosition = new Pair(state.position.x() + 1, state.position.y());
+            if (isNewFiguresPositionValid(newPosition)) {
+                state.position = newPosition;
+                notifyListeners();
+            }
         }
     }
 
@@ -87,16 +93,18 @@ public class TetrisModel implements GameEventsListener {
     public void rotate() {
         if (state.gameOver) return;
 
-        if (!checkFigureForSquare(state.figure.clone())) {
-            int[][] rotatedFigure = new int[4][4];
-            for (int r = 0; r < state.figure.length; r++) {
-                for (int c = 0; c < state.figure[r].length; c++) {
-                    rotatedFigure[c][3 - r] = state.figure[r][c];
+        if (!state.paused) {
+            if (!checkFigureForSquare(state.figure.clone())) {
+                int[][] rotatedFigure = new int[4][4];
+                for (int r = 0; r < state.figure.length; r++) {
+                    for (int c = 0; c < state.figure[r].length; c++) {
+                        rotatedFigure[c][3 - r] = state.figure[r][c];
+                    }
                 }
-            }
-            if (isNewFiguresPositionValidAfterRotation(state.position, rotatedFigure)) {
-                state.figure = rotatedFigure;
-                notifyListeners();
+                if (isNewFiguresPositionValidAfterRotation(state.position, rotatedFigure)) {
+                    state.figure = rotatedFigure;
+                    notifyListeners();
+                }
             }
         }
     }
@@ -112,17 +120,21 @@ public class TetrisModel implements GameEventsListener {
 
     @Override
     public void drop() {
-        var droppedFigurePosition = new Pair(state.position.x(), state.position.y() + 1);
+        if (state.gameOver) return;
 
-        while (isNewFiguresPositionValid(droppedFigurePosition)) {
-            state.position = droppedFigurePosition;
-            droppedFigurePosition = new Pair(state.position.x(), state.position.y() + 1);
+        if (!state.paused) {
+            var droppedFigurePosition = new Pair(state.position.x(), state.position.y() + 1);
+
+            while (isNewFiguresPositionValid(droppedFigurePosition)) {
+                state.position = droppedFigurePosition;
+                droppedFigurePosition = new Pair(state.position.x(), state.position.y() + 1);
+            }
+
+            pasteFigure();
+            deleteFullRows();
+            initFigure();
+            notifyListeners();
         }
-
-        pasteFigure();
-        deleteFullRows();
-        initFigure();
-        notifyListeners();
     }
 
     public boolean isNewFiguresPositionValid(Pair newPosition) {
@@ -193,15 +205,14 @@ public class TetrisModel implements GameEventsListener {
 
     private void calculateScore() {
         state.score += state.width;
-        notifyListenersScoreChanged();
         checkLevelUp();
+        notifyListeners();
     }
 
     private void checkLevelUp() {
         if (state.score % 100 == 0) {
             state.level++;
             changePeriod();
-            notifyListenersLevelChanged();
         }
     }
 
@@ -214,19 +225,14 @@ public class TetrisModel implements GameEventsListener {
 
     public void gameOver() {
         state.gameOver = true;
-        notifyListenersGameOver();
+        notifyListeners();
     }
 
     public void restartGame() {
         state.gameOver = false;
-
         state.score = 0;
-        notifyListenersScoreChanged();
-
         state.level = 1;
         state.period = TetrisModel.DEFAULT_PERIOD;
-        notifyListenersLevelChanged();
-
 
         for (int[] row : state.field) {
             Arrays.fill(row, 0);
@@ -238,10 +244,13 @@ public class TetrisModel implements GameEventsListener {
 
     @Override
     public void pause() {
+        state.paused = !state.paused;
+        notifyListeners();
     }
 
     public void changePeriod() {
         state.period -= 50;
+        notifyListeners();
         System.out.println(state.period);
     }
 
@@ -249,17 +258,4 @@ public class TetrisModel implements GameEventsListener {
         listeners.forEach(listener -> listener.onChange(this));
     }
 
-    private void notifyListenersScoreChanged() {
-        listeners.forEach(listener -> listener.scoreChanged(this));
-    }
-
-    private void notifyListenersLevelChanged() {
-        listeners.forEach(listener -> {
-            listener.levelChanged(this);
-        });
-    }
-
-    private void notifyListenersGameOver() {
-        listeners.forEach(listener -> listener.gameOver(this));
-    }
 }

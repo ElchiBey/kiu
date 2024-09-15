@@ -30,7 +30,6 @@ public class View {
         graphics.drawString("Level: " + level, 300, 30);
     }
 
-
     public void showGameOver() {
         graphics.setColor(Color.darkGray);
         graphics.fillRect(50, 245, 300, 80); // Clear the area
@@ -38,10 +37,8 @@ public class View {
         graphics.setColor(Color.red.darker());
         graphics.setFont(new Font("Arial", Font.BOLD, 40));
 
-
         graphics.drawString("GAME OVER", 80, 300);
     }
-
 
     public void draw(TetrisModel model) {
         showScore(model.state.score);
@@ -64,8 +61,7 @@ public class View {
         graphics.drawBoxAt(ORIGIN + col * BOX_SIZE, ORIGIN + row * BOX_SIZE, value);
     }
 
-    public void restart() {
-        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
-        graphics.setColor(Color.white);
+    public void paused() {
+
     }
 }

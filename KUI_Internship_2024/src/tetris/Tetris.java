@@ -74,9 +74,9 @@ public class Tetris {
         service.scheduleAtFixedRate(controller::slideDown, 0, 1, TimeUnit.SECONDS);
     }
 
-    private static void task(Controller controller, double period) {
+    private static void task(Controller controller, int period) {
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(controller::slideDown, 0, (long)period, TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(controller::slideDown, 0, period, TimeUnit.SECONDS);
         controller.setTask(service);
     }
 

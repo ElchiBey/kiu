@@ -19,31 +19,18 @@ public class Controller implements ModelListener, GameEventsListener {
 
     @Override
     public void onChange(TetrisModel model) {
-        view.draw(model);
-    }
-
-    @Override
-    public void scoreChanged(TetrisModel model) {
-        view.showScore(model.state.score);
+        if (model.state.gameOver) {
+            view.showGameOver();
+        } else if (model.state.paused) {
+            view.paused();
+        } else {
+            view.draw(model);
+            view.showScore(model.state.score);
+        }
     }
 
     public void setTask(ScheduledExecutorService service) {
         this.service = service;
-    }
-
-    @Override
-    public void levelChanged(TetrisModel model) {
-        view.showLevel(model.state.level);
-
-        model.changePeriod();
-        service.shutdownNow();
-        service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this::slideDown, 0, (long)model.state.period, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void gameOver(TetrisModel model) {
-        view.showGameOver();
     }
 
     @Override

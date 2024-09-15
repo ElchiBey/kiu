@@ -37,8 +37,8 @@ public class Controller implements ModelListener, GameEventsListener {
             view.paused();
         } else {
             if (model.state.period != currentPeriod) {
-                currentPeriod = model.state.period; // Update the period
-                startSlidingTask(currentPeriod);    // Restart the task with the new period
+                currentPeriod = model.state.period;
+                startSlidingTask(currentPeriod);
             }
 
             view.draw(model);
